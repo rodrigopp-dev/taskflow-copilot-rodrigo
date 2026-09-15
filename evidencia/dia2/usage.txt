@@ -1,0 +1,2 @@
+Get-Clipboard | Set-Content evidencia\dia2\usage.txt
+--- al empezar el dia (MP-2) ---

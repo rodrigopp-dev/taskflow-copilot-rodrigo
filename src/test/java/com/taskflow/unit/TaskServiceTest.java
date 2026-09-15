@@ -189,6 +189,43 @@ class TaskServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("SinResponsable")
+    class SinResponsable {
+
+        @Test
+        void devuelveSoloSinResponsableYEnOrdenPorFecha() {
+            try {
+                Task t10 = new Task(10L, "SinResp10", "d", TaskStatus.TODO, Priority.MED, PROYECTO, null, LocalDate.now().plusDays(10));
+                Task withAssignee = new Task(11L, "ConResp", "d", TaskStatus.TODO, Priority.MED, PROYECTO, 2L, LocalDate.now().plusDays(5));
+                Task noDate = new Task(12L, "SinFecha", "d", TaskStatus.TODO, Priority.MED, PROYECTO, null, null);
+                Task t2 = new Task(13L, "SinResp2", "d", TaskStatus.TODO, Priority.MED, PROYECTO, null, LocalDate.now().plusDays(2));
+                when(repository.findAll()).thenReturn(List.of(t10, withAssignee, noDate, t2));
+
+                List<Task> res = service.sinResponsable();
+
+                List<Long> ids = res.stream().map(Task::getId).toList();
+                assertEquals(List.of(13L, 10L, 12L), ids);
+            } catch (TaskValidationException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        @Test
+        void cuandoNoHaySinResponsable_devuelveVacio() {
+            try {
+                Task withAssignee = new Task(21L, "ConRespSolo", "d", TaskStatus.TODO, Priority.MED, PROYECTO, 2L, null);
+                when(repository.findAll()).thenReturn(List.of(withAssignee));
+
+                List<Task> res = service.sinResponsable();
+
+                assertEquals(0, res.size());
+            } catch (TaskValidationException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+    }
+
     /** Fabrica una Task de rehidratación REAL (dato, no mock). assigneeId null = sin responsable. */
     private Task tarea(Long id, String title, Long assigneeId) {
         try {

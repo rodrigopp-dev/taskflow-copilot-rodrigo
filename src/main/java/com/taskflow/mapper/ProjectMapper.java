@@ -22,4 +22,23 @@ public final class ProjectMapper {
         return new ProjectResponse(p.getId(), p.getName(), p.getDescription(),
                 p.getOwnerId(), p.getCreatedAt());
     }
+
+    /**
+     * Construye el DTO ProjectSummaryResponse a partir del proyecto y sus tareas.
+     */
+    public static com.taskflow.dto.ProjectSummaryResponse aSummary(Project p, java.util.List<com.taskflow.model.Task> tasks) {
+        java.util.Map<String, Integer> byStatus = new java.util.LinkedHashMap<>();
+        for (com.taskflow.model.TaskStatus s : com.taskflow.model.TaskStatus.values()) {
+            byStatus.put(s.name(), 0);
+        }
+        int overdue = 0;
+        for (com.taskflow.model.Task t : tasks) {
+            String key = t.getStatus().name();
+            byStatus.put(key, byStatus.getOrDefault(key, 0) + 1);
+            if (t.estaVencida()) {
+                overdue++;
+            }
+        }
+        return new com.taskflow.dto.ProjectSummaryResponse(p.getId(), p.getName(), tasks.size(), byStatus, overdue);
+    }
 }

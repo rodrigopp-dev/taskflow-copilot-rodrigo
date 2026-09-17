@@ -131,4 +131,13 @@ public class ProjectController {
         projectService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "Resumen del proyecto",
+            description = "Devuelve conteos por estado (TODO, IN_PROGRESS, DONE) y cuántas tareas están vencidas.")
+    @GetMapping("/projects/{id}/summary")
+    public com.taskflow.dto.ProjectSummaryResponse getProjectSummary(@PathVariable("id") Long id) {
+        Project proyecto = projectService.buscarPorId(id)
+                .orElseThrow(() -> new ProjectNotFoundException(id));
+        return projectService.resumenDe(proyecto);
+    }
 }

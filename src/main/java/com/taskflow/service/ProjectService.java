@@ -101,4 +101,13 @@ public class ProjectService {
         tareasDe(id).forEach(t -> taskRepository.deleteById(t.getId()));   // cascada manual (la FK obliga el orden)
         projectRepository.deleteById(id);
     }
+
+    /**
+     * Resumen de un proyecto: delega en taskRepository y en el mapper para construir el DTO.
+     * Recibe la entidad Project ya encontrada por el controller.
+     */
+    public com.taskflow.dto.ProjectSummaryResponse resumenDe(Project project) {
+        java.util.List<Task> tareas = tareasDe(project.getId());
+        return com.taskflow.mapper.ProjectMapper.aSummary(project, tareas);
+    }
 }

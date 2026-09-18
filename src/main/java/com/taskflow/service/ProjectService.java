@@ -110,4 +110,27 @@ public class ProjectService {
         java.util.List<Task> tareas = tareasDe(project.getId());
         return com.taskflow.mapper.ProjectMapper.aSummary(project, tareas);
     }
+
+    /**
+     * Reporte de progreso por proyecto: para cada proyecto cuenta tareas y DONE y calcula el
+     * porcentaje redondeado a un decimal.
+     */
+    public java.util.List<com.taskflow.dto.ProjectProgressResponse> progresoPorProyecto() {
+        java.util.List<Project> proyectos = projectRepository.findAll();
+        return proyectos.stream()
+                .sorted(java.util.Comparator.comparing(Project::getId))
+                .map(p -> {
+                    java.util.List<Task> tareas = taskRepository.findByProjectId(p.getId());
+                    long total = tareas.size();
+                    long done = tareas.stream().filter(t -> t.getStatus() == com.taskflow.model.TaskStatus.DONE).count();
+                    double percentDone;
+                    if (total == 0) {
+                        percentDone = 0.0;
+                    } else {
+                        percentDone = Math.round((done * 100.0 / total) * 10.0) / 10.0;
+                    }
+                    return com.taskflow.mapper.ProjectMapper.aProgreso(p, total, done, percentDone);
+                })
+                .toList();
+    }
 }

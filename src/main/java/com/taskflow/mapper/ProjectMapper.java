@@ -41,4 +41,9 @@ public final class ProjectMapper {
         }
         return new com.taskflow.dto.ProjectSummaryResponse(p.getId(), p.getName(), tasks.size(), byStatus, overdue);
     }
+
+    /** Construye el DTO de progreso por proyecto. */
+    public static com.taskflow.dto.ProjectProgressResponse aProgreso(Project proyecto, long totalTasks, long doneTasks, double percentDone) {
+        return new com.taskflow.dto.ProjectProgressResponse(proyecto.getId(), proyecto.getName(), totalTasks, doneTasks, percentDone);
+    }
 }
